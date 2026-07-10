@@ -23,7 +23,6 @@ public class WwjSimpleService extends Service {
         Log.d(TAG, "Thread ID: " + android.os.Process.myTid());
         
         createNotificationChannel();
-        startForeground(NOTIFICATION_ID, buildNotification());
     }
 
     @Override
@@ -32,6 +31,8 @@ public class WwjSimpleService extends Service {
         Log.d(TAG, "startId: " + startId);
         Log.d(TAG, "flags: " + flags);
         Log.d(TAG, "Service is running in foreground...");
+        
+        startForeground(NOTIFICATION_ID, buildNotification());
         
         new Thread(new Runnable() {
             @Override
