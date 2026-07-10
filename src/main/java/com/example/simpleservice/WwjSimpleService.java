@@ -7,12 +7,14 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 
 public class WwjSimpleService extends Service {
     private static final String TAG = "WwjSimpleService";
     private static final String CHANNEL_ID = "WwjServiceChannel";
     private static final int NOTIFICATION_ID = 1;
+    private PowerManager.WakeLock wakeLock;
 
     @Override
     public void onCreate() {
@@ -23,6 +25,7 @@ public class WwjSimpleService extends Service {
         Log.d(TAG, "Thread ID: " + android.os.Process.myTid());
         
         createNotificationChannel();
+        acquireWakeLock();
     }
 
     @Override
@@ -59,6 +62,7 @@ public class WwjSimpleService extends Service {
                         Log.d(TAG, "Service running - count: " + count);
                         Log.d(TAG, "Thread still alive in foreground");
                         Log.d(TAG, "Process still running, PID: " + android.os.Process.myPid());
+                        Log.d(TAG, "WakeLock held: " + (wakeLock != null && wakeLock.isHeld()));
                     } catch (InterruptedException e) {
                         Log.d(TAG, "Thread interrupted");
                         break;
@@ -68,6 +72,30 @@ public class WwjSimpleService extends Service {
         }).start();
 
         return START_STICKY;
+    }
+
+    private void acquireWakeLock() {
+        try {
+            PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+            if (pm != null) {
+                wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+                wakeLock.acquire();
+                Log.d(TAG, "WakeLock acquired successfully");
+            } else {
+                Log.e(TAG, "PowerManager is null");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to acquire WakeLock: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void releaseWakeLock() {
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+            wakeLock = null;
+            Log.d(TAG, "WakeLock released");
+        }
     }
 
     private void createNotificationChannel() {
@@ -124,6 +152,7 @@ public class WwjSimpleService extends Service {
         super.onDestroy();
         Log.d(TAG, "========== onDestroy() called ==========");
         Log.d(TAG, "Service destroyed");
+        releaseWakeLock();
     }
 
     @Override
