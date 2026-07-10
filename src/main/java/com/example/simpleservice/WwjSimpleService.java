@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-public class SimpleService extends Service {
-    private static final String TAG = "SimpleService";
+public class WwjSimpleService extends Service {
+    private static final String TAG = "WwjSimpleService";
 
     @Override
     public void onCreate() {

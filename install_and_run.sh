@@ -1,13 +1,13 @@
 #!/bin/bash
 
-APK_NAME="SimpleService.apk"
-APK_PATH="out/target/product/$1/system/app/SimpleService/$APK_NAME"
+APK_NAME="WwjSimpleService.apk"
+APK_PATH="out/target/product/$1/system/app/WwjSimpleService/$APK_NAME"
 DEVICE_APK_PATH="/data/local/tmp/$APK_NAME"
 PACKAGE_NAME="com.example.simpleservice"
-SERVICE_NAME="$PACKAGE_NAME/.SimpleService"
+SERVICE_NAME="$PACKAGE_NAME/.WwjSimpleService"
 
 echo "=========================================="
-echo "  SimpleService Installation Script"
+echo "  WwjSimpleService Installation Script"
 echo "  (No UI - Background Service Only)"
 echo "=========================================="
 echo ""
@@ -54,4 +54,4 @@ echo "=========================================="
 echo "Press Ctrl+C to stop viewing logs"
 echo "Expected output: onCreate, onStartCommand, periodic messages"
 echo "=========================================="
-adb logcat -s SimpleService -v time
+adb logcat -s WwjSimpleService -v time
