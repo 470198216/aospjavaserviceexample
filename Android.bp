@@ -5,11 +5,10 @@ android_app {
     ],
     manifest: "src/main/AndroidManifest.xml",
     resource_dirs: ["src/main/res"],
-    sdk_version: "current",
     certificate: "platform",
-    privileged: true,
+    platform_apis: true,
     dex_preopt: {
         enabled: true,
-        profile: "art-profile",
     },
+    installable: true,
 }
