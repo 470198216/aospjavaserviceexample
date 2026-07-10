@@ -38,14 +38,14 @@ else
 fi
 
 echo ""
-echo "[3/4] Starting service (no UI)..."
-adb shell am startservice "$SERVICE_NAME"
+echo "[3/4] Starting foreground service (no UI)..."
+adb shell am startforegroundservice "$SERVICE_NAME"
 if [ $? -eq 0 ]; then
     echo "Service started successfully!"
 else
     echo "Error: Failed to start service"
     echo "Trying with explicit intent..."
-    adb shell am startservice -a android.intent.action.MAIN "$SERVICE_NAME"
+    adb shell am startforegroundservice -a android.intent.action.MAIN "$SERVICE_NAME"
 fi
 
 echo ""
