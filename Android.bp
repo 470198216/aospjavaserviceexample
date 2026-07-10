@@ -1,0 +1,9 @@
+android_app {
+    name: "SimpleService",
+    srcs: [
+        "src/main/java/com/example/simpleservice/SimpleService.java",
+    ],
+    manifest: "src/main/AndroidManifest.xml",
+    sdk_version: "current",
+    certificate: "platform",
+}
