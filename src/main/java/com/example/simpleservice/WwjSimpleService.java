@@ -32,7 +32,21 @@ public class WwjSimpleService extends Service {
         Log.d(TAG, "flags: " + flags);
         Log.d(TAG, "Service is running in foreground...");
         
-        startForeground(NOTIFICATION_ID, buildNotification());
+        try {
+            Notification notification = buildNotification();
+            if (notification != null) {
+                startForeground(NOTIFICATION_ID, notification);
+                Log.d(TAG, "startForeground() succeeded");
+            } else {
+                Log.e(TAG, "buildNotification() returned null");
+            }
+        } catch (SecurityException e) {
+            Log.e(TAG, "startForeground() failed with SecurityException: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            Log.e(TAG, "startForeground() failed with Exception: " + e.getMessage());
+            e.printStackTrace();
+        }
         
         new Thread(new Runnable() {
             @Override
@@ -44,6 +58,7 @@ public class WwjSimpleService extends Service {
                         count++;
                         Log.d(TAG, "Service running - count: " + count);
                         Log.d(TAG, "Thread still alive in foreground");
+                        Log.d(TAG, "Process still running, PID: " + android.os.Process.myPid());
                     } catch (InterruptedException e) {
                         Log.d(TAG, "Thread interrupted");
                         break;
@@ -57,33 +72,51 @@ public class WwjSimpleService extends Service {
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Wwj Service Channel",
-                    NotificationManager.IMPORTANCE_LOW
-            );
-            channel.setDescription("WwjSimpleService foreground notification");
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) {
-                manager.createNotificationChannel(channel);
+            try {
+                NotificationChannel channel = new NotificationChannel(
+                        CHANNEL_ID,
+                        "Wwj Service Channel",
+                        NotificationManager.IMPORTANCE_DEFAULT
+                );
+                channel.setDescription("WwjSimpleService foreground notification");
+                channel.setShowBadge(false);
+                NotificationManager manager = getSystemService(NotificationManager.class);
+                if (manager != null) {
+                    manager.createNotificationChannel(channel);
+                    Log.d(TAG, "Notification channel created successfully");
+                } else {
+                    Log.e(TAG, "NotificationManager is null");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to create notification channel: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }
 
     private Notification buildNotification() {
-        Notification.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder = new Notification.Builder(this, CHANNEL_ID);
-        } else {
-            builder = new Notification.Builder(this);
+        try {
+            Notification.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                builder = new Notification.Builder(this, CHANNEL_ID);
+            } else {
+                builder = new Notification.Builder(this);
+            }
+            
+            Notification notification = builder
+                    .setContentTitle("WwjSimpleService")
+                    .setContentText("Service is running in foreground")
+                    .setSmallIcon(android.R.drawable.ic_menu_info_details)
+                    .setPriority(Notification.PRIORITY_DEFAULT)
+                    .build();
+            
+            Log.d(TAG, "Notification built successfully");
+            return notification;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to build notification: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
-        
-        return builder
-                .setContentTitle("WwjSimpleService")
-                .setContentText("Service is running in foreground")
-                .setSmallIcon(android.R.drawable.ic_menu_info_details)
-                .setPriority(Notification.PRIORITY_LOW)
-                .build();
     }
 
     @Override
