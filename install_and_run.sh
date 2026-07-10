@@ -20,7 +20,7 @@ fi
 
 if [ ! -f "$APK_PATH" ]; then
     echo "Error: APK not found at $APK_PATH"
-    echo "Please compile first: mmm vendor/wifimonitorserver_simple/"
+    echo "Please compile first: mmm vendor/androidapp_simple/"
     exit 1
 fi
 
